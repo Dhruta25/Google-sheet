@@ -6,69 +6,49 @@
   <title>Daily Work Submission</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f8f9fa;
       margin: 0;
-      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f8;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      height: 100vh;
     }
 
     .form-container {
-      background-color: #ffffff;
+      background: #fff;
       padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      max-width: 480px;
-      width: 90%;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 100%;
     }
 
     h2 {
       text-align: center;
-      color: #333;
       margin-bottom: 20px;
     }
 
-    input, textarea, select {
+    input, textarea, select, button {
       width: 100%;
       padding: 12px;
-      margin-bottom: 16px;
-      border: 1px solid #ccc;
+      margin-bottom: 15px;
       border-radius: 8px;
-      font-size: 15px;
-      box-sizing: border-box;
+      border: 1px solid #ccc;
+      font-size: 14px;
     }
 
     button {
-      width: 100%;
-      padding: 12px;
       background-color: #007bff;
       color: white;
+      font-weight: bold;
       border: none;
-      border-radius: 8px;
-      font-size: 16px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: background-color 0.3s;
     }
 
     button:hover {
       background-color: #0056b3;
-    }
-
-    .success-message, .error-message {
-      text-align: center;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-
-    .success-message {
-      color: green;
-    }
-
-    .error-message {
-      color: red;
     }
 
     @media (max-width: 600px) {
@@ -83,63 +63,50 @@
   <div class="form-container">
     <h2>Daily Work Submission</h2>
     <form id="work-form">
-      <input name="name" placeholder="Full Name" required />
+      <input type="text" name="name" placeholder="Name" required>
       <textarea name="task" placeholder="Task Assigned" required></textarea>
       <select name="status" required>
-        <option value="">-- Select Status --</option>
-        <option value="Completed">Completed</option>
-        <option value="In Progress">In Progress</option>
-        <option value="Pending">Pending</option>
+        <option value="">Select Status</option>
+        <option value="completed">Completed</option>
+        <option value="in-progress">In Progress</option>
+        <option value="pending">Pending</option>
       </select>
-      <input name="timeTaken" placeholder="Time Taken (e.g. 4hr)" required />
-      <input type="date" name="date" required />
+      <input type="text" name="timeTaken" placeholder="Time Taken (e.g. 4hr)" required>
+      <input type="date" name="date" required>
       <button type="submit">Submit</button>
-      <div id="message" class=""></div>
     </form>
   </div>
 
   <script>
     const form = document.getElementById('work-form');
-    const messageDiv = document.getElementById('message');
-
     form.addEventListener('submit', function(e) {
       e.preventDefault();
-
+      
       const data = {
-        name: form.name.value.trim(),
-        task: form.task.value.trim(),
+        name: form.name.value,
+        task: form.task.value,
         status: form.status.value,
-        timeTaken: form.timeTaken.value.trim(),
+        timeTaken: form.timeTaken.value,
         date: form.date.value
       };
 
-      messageDiv.textContent = "";
-      messageDiv.className = "";
-
-      fetch("https://script.google.com/macros/s/AKfycbxEvW3AKD5_ghbZphO3Quo523RWWBFEzQmHzq1ju143TYuHZKUWTZ7okd9XqKdABZ_1/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbxrwRv_oJZ_dEC11g9058yvvQRcG2SPrq44iKumKomZXh5xaUcd3ZlvIKXD81T2FBRZ/exec", {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
           "Content-Type": "application/json"
         }
       })
-      .then(response => response.json())
-      .then(result => {
-        if (result.result === "Success") {
-          messageDiv.textContent = "Submitted Successfully!";
-          messageDiv.className = "success-message";
-          form.reset();
-        } else {
-          throw new Error("Submission failed on server.");
-        }
+      .then(res => res.json())
+      .then(response => {
+        alert("Submitted Successfully!");
+        form.reset();
       })
       .catch(error => {
-        console.error("Error:", error);
-        messageDiv.textContent = "Submission Failed. Please try again.";
-        messageDiv.className = "error-message";
+        console.error("Error!", error.message);
+        alert("Submission Failed. Please try again.");
       });
     });
   </script>
-
 </body>
 </html>
