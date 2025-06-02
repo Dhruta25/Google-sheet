@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Daily Work Submission</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .form-container {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    @media (max-width: 600px) {
+      .form-container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-container">
+    <h2>Daily Work Submission</h2>
+    <form id="work-form">
+      <input name="name" placeholder="Name" required>
+      <textarea name="task" placeholder="Task Assigned" required></textarea>
+      <select name="status" required>
+        <option value="completed">Completed</option>
+        <option value="in-progress">In Progress</option>
+        <option value="pending">Pending</option>
+      </select>
+      <input name="timeTaken" placeholder="Time Taken (e.g. 4hr)" required>
+      <input type="date" name="date" required>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    const form = document.getElementById('work-form');
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const data = {
+        name: form.name.value,
+        task: form.task.value,
+        status: form.status.value,
+        timeTaken: form.timeTaken.value,
+        date: form.date.value
+      };
+
+      fetch("https://script.google.com/macros/s/AKfycbyw8DYzRApzWQIT_cUvp7xNIBPDE0nNuwkJheM47QcQ-x0WeGFTe7EFBrtW9V5jgNBG/exec", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(response => response.json())
+      .then(result => {
+        alert("Submitted Successfully!");
+        form.reset();
+      })
+      .catch(error => {
+        console.error("Error!", error);
+        alert("Submission Failed!");
+      });
+    });
+  </script>
+
+</body>
+</html>
