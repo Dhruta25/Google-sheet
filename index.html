@@ -1,32 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Daily Work Submission</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f6f8;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
+      min-height: 100vh;
     }
 
     .form-container {
-      background: white;
-      padding: 30px 40px;
+      background-color: #ffffff;
+      padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 500px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      max-width: 480px;
+      width: 90%;
     }
 
     h2 {
       text-align: center;
-      margin-bottom: 20px;
       color: #333;
+      margin-bottom: 20px;
     }
 
     input, textarea, select {
@@ -35,7 +37,8 @@
       margin-bottom: 16px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      font-size: 14px;
+      font-size: 15px;
+      box-sizing: border-box;
     }
 
     button {
@@ -54,6 +57,20 @@
       background-color: #0056b3;
     }
 
+    .success-message, .error-message {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .success-message {
+      color: green;
+    }
+
+    .error-message {
+      color: red;
+    }
+
     @media (max-width: 600px) {
       .form-container {
         padding: 20px;
@@ -66,32 +83,40 @@
   <div class="form-container">
     <h2>Daily Work Submission</h2>
     <form id="work-form">
-      <input name="name" placeholder="Name" required>
+      <input name="name" placeholder="Full Name" required />
       <textarea name="task" placeholder="Task Assigned" required></textarea>
       <select name="status" required>
-        <option value="completed">Completed</option>
-        <option value="in-progress">In Progress</option>
-        <option value="pending">Pending</option>
+        <option value="">-- Select Status --</option>
+        <option value="Completed">Completed</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Pending">Pending</option>
       </select>
-      <input name="timeTaken" placeholder="Time Taken (e.g. 4hr)" required>
-      <input type="date" name="date" required>
+      <input name="timeTaken" placeholder="Time Taken (e.g. 4hr)" required />
+      <input type="date" name="date" required />
       <button type="submit">Submit</button>
+      <div id="message" class=""></div>
     </form>
   </div>
 
   <script>
     const form = document.getElementById('work-form');
+    const messageDiv = document.getElementById('message');
+
     form.addEventListener('submit', function(e) {
       e.preventDefault();
+
       const data = {
-        name: form.name.value,
-        task: form.task.value,
+        name: form.name.value.trim(),
+        task: form.task.value.trim(),
         status: form.status.value,
-        timeTaken: form.timeTaken.value,
+        timeTaken: form.timeTaken.value.trim(),
         date: form.date.value
       };
 
-      fetch("https://script.google.com/macros/s/AKfycbytWsy_qPk-_pjBUSq5aj8H2vsH0z7ntMl_qxFWhszV8eP1hzHBTeNgKrhe77WOYpEN/exec", {
+      messageDiv.textContent = "";
+      messageDiv.className = "";
+
+      fetch("https://script.google.com/macros/s/AKfycbxEvW3AKD5_ghbZphO3Quo523RWWBFEzQmHzq1ju143TYuHZKUWTZ7okd9XqKdABZ_1/exec", {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
@@ -100,12 +125,18 @@
       })
       .then(response => response.json())
       .then(result => {
-        alert("Submitted Successfully!");
-        form.reset();
+        if (result.result === "Success") {
+          messageDiv.textContent = "Submitted Successfully!";
+          messageDiv.className = "success-message";
+          form.reset();
+        } else {
+          throw new Error("Submission failed on server.");
+        }
       })
       .catch(error => {
-        console.error("Error!", error);
-        alert("Submission Failed!");
+        console.error("Error:", error);
+        messageDiv.textContent = "Submission Failed. Please try again.";
+        messageDiv.className = "error-message";
       });
     });
   </script>
