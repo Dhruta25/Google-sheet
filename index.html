@@ -59,7 +59,6 @@
   </style>
 </head>
 <body>
-
   <div class="form-container">
     <h2>Daily Work Submission</h2>
     <form id="work-form">
@@ -78,33 +77,58 @@
   </div>
 
   <script>
-    const form = document.getElementById('work-form');
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set default date to today
+      document.querySelector('input[name="date"]').valueAsDate = new Date();
       
-      const data = {
-        name: form.name.value,
-        task: form.task.value,
-        status: form.status.value,
-        timeTaken: form.timeTaken.value,
-        date: form.date.value
-      };
+      const form = document.getElementById('work-form');
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+        
+        const data = {
+          name: form.name.value,
+          task: form.task.value,
+          status: form.status.value,
+          timeTaken: form.timeTaken.value,
+          date: form.date.value
+        };
 
-      fetch("https://script.google.com/macros/s/AKfycbxrwRv_oJZ_dEC11g9058yvvQRcG2SPrq44iKumKomZXh5xaUcd3ZlvIKXD81T2FBRZ/exec", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-      .then(res => res.json())
-      .then(response => {
-        alert("Submitted Successfully!");
-        form.reset();
-      })
-      .catch(error => {
-        console.error("Error!", error.message);
-        alert("Submission Failed. Please try again.");
+        fetch("https://script.google.com/macros/s/AKfycbyhUeVdlahY4lw9ja2DBWM_PtpVbDrTM4uSrJvXE8pmSviqFd4HAZp99IE9UdRVbKvz/exec", {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return res.json();
+        })
+        .then(response => {
+          if (response.result === 'success') {
+            alert("Submitted Successfully!");
+            form.reset();
+            // Reset date to today after submission
+            document.querySelector('input[name="date"]').valueAsDate = new Date();
+          } else {
+            throw new Error(response.error || 'Unknown error occurred');
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert(`Submission Failed: ${error.message}. Please try again.`);
+        })
+        .finally(() => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit';
+        });
       });
     });
   </script>
